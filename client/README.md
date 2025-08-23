@@ -16,11 +16,11 @@ It allows users to **sign up, log in, create, edit, and securely store notes** w
 
 ## 📂 Project Structure
 
-│── src/ # Angular source code
-│── dist/ # Production build output
-│── angular.json # Angular project configuration
-│── package.json # Dependencies & scripts
-│── README.md # Project documentation
+1.  src/ -> **Angular source code**
+2.  dist/ -> **Production build output**
+3.  angular.json -> **Angular project configuration**
+4.  package.json -> **Dependencies & scripts**
+5.  README.md -> **Project documentation**
 
 ---
 
@@ -34,9 +34,9 @@ It allows users to **sign up, log in, create, edit, and securely store notes** w
    ```bash
    ng serve -o
    ```
-3. Then open http://localhost:4200 in your web browser to see the User Interface of the project
+    Then open http://localhost:4200 in your web browser to see the User Interface of the project
 
-4. 🏗️ Build for Production
+3. 🏗️ Build for Production
     ```bash
    ng build --configuration production
    ```
