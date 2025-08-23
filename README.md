@@ -50,6 +50,19 @@ It allows users to **sign up, log in, and create, view, edit, and delete notes**
 
 ---
 
+---
+
+## Contributing
+
+Any kind of contributions are welcome.
+  1. **Fork** the repo on GitHub.
+  2. **Clone** the project to your own machine by following the below given steps of installation.
+  3. **Commit** changes to **development** branch.
+  4. **Push your work** back up to your fork.
+  5. Submit a **Pull request** so that I can review your changes and after successfully reviewing your changes, I will **merge your pull request if it has some meaningful code**.
+  6. Be happy, but **please don't just update the readme file**.
+---
+
 ## ⚙️ Installation (Local Development)
 
 ```bash
