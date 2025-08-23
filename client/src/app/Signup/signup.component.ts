@@ -20,7 +20,7 @@ export class SignupComponent {
 
   signup() {
     if (!this.email || !this.password) return;
-    this.http.post<{ success: boolean }>('http://localhost:5000/auth/signup', {
+    this.http.post<{ success: boolean }>('https://make-notes-qyc8.onrender.com/auth/signup', {
       email: this.email,
       password: this.password
     }).subscribe({

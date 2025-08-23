@@ -23,7 +23,7 @@ export class LoginComponent {
     if (!this.email || !this.password) return;
     this.http.post<{
       success: boolean, accessToken?: string, refreshToken?: string
-    }>('http://localhost:5000/auth/login', {
+    }>('https://make-notes-qyc8.onrender.com/auth/login', {
       email: this.email,
       password: this.password
     }).subscribe({

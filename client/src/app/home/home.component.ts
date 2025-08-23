@@ -52,7 +52,7 @@ export class HomeComponent implements OnInit {
   createNote() {
     if (!this.enteredText) return;
 
-    this.http.post<{ generatedLink: string }>("http://localhost:5000/notes/create", {
+    this.http.post<{ generatedLink: string }>("https://make-notes-qyc8.onrender.com/notes/create", {
       noteText: this.enteredText,
       notePassword: this.enteredPassword,
       noteDuration: this.enteredDuration
@@ -78,7 +78,7 @@ export class HomeComponent implements OnInit {
   getNote() {
     if (!this.noteLinkCredential) return;
 
-    this.http.post<{ text: string, msg: string }>("http://localhost:5000/notes/get", {
+    this.http.post<{ text: string, msg: string }>("https://make-notes-qyc8.onrender.com/notes/get", {
       noteLinkCredential: this.noteLinkCredential,
       passwordCredential: this.passwordCredential
     })
@@ -109,7 +109,7 @@ export class HomeComponent implements OnInit {
     if (!accessToken) return;
 
     this.http.get<{ notes: any[] }>(
-      "http://localhost:5000/notes/myNotes",
+      "https://make-notes-qyc8.onrender.com/notes/myNotes",
     ).subscribe({
       next: (res) => this.userNotes = res.notes,
       error: () => console.error("failed to fetch user notes")
@@ -126,7 +126,7 @@ export class HomeComponent implements OnInit {
 
   viewNote(noteUrl: string) {
     this.http.post<{ text?: string; isPassword?: string }>(
-      "http://localhost:5000/notes/view",
+      "https://make-notes-qyc8.onrender.com/notes/view",
       { noteUrl }
     ).subscribe({
       next: ({ text, isPassword }) => {
@@ -149,7 +149,7 @@ export class HomeComponent implements OnInit {
   updateNote(noteUrl : string) {
     this.noteToUpdate = noteUrl;
 
-    this.http.post<{ text : string }>("http://localhost:5000/notes/view", { noteUrl })
+    this.http.post<{ text : string }>("https://make-notes-qyc8.onrender.com/notes/view", { noteUrl })
     .subscribe({
       next : ({ text }) => {
         this.updatedNoteText = text;
@@ -167,7 +167,7 @@ export class HomeComponent implements OnInit {
 
   confirmUpdate() {
   if (this.noteToUpdate && this.updatedNoteText.trim()) {
-    this.http.post<{ success : boolean }>("http://localhost:5000/notes/update", { noteUrl : this.noteToUpdate, updatedNoteText : this.updatedNoteText })
+    this.http.post<{ success : boolean }>("https://make-notes-qyc8.onrender.com/notes/update", { noteUrl : this.noteToUpdate, updatedNoteText : this.updatedNoteText })
     .subscribe({
       next : ({ success }) => {
         if(success) {
@@ -198,7 +198,7 @@ export class HomeComponent implements OnInit {
   confirmDelete() {
     if (this.noteToDelete) {
       this.http.post<{ deleted: boolean }>(
-        "http://localhost:5000/notes/delete",
+        "https://make-notes-qyc8.onrender.com/notes/delete",
         { noteUrl: this.noteToDelete } // FIX: Send directly
       ).subscribe({
         next: (res) => {
