@@ -58,5 +58,5 @@ npm install
 ng serve -o
 
 ```
-### Now your frontend is running on http://localhost:4200 in your browser.
+Now your frontend is running on http://localhost:4200 in your browser.
 And your backend API will be running on http://localhost:5000, but your frontend will be hitting the live API.So, if you want that your frontend hots your local backend API then replace all the live API link(https://make-notes-qyc8.onrender.com) to http://localhost:5000
