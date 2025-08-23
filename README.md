@@ -25,7 +25,7 @@ It allows users to **sign up, log in, and create, view, edit, and delete notes**
 ---
 
 ## 📽 Demo Video
-👉 [Watch the Demo](./assets/demo.gif)
+👉 [Watch the Demo](https://www.youtube.com/watch?v=SK_OKUozgmc)
 
 ---
 
