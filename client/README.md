@@ -41,3 +41,8 @@ It allows users to **sign up, log in, create, edit, and securely store notes** w
    ng build --configuration production
    ```
    Output will be stored in the dist/ folder.
+
+---
+
+## 📜 License
+This project is licensed under the MIT License.
