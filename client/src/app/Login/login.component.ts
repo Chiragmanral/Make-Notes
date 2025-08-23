@@ -33,6 +33,7 @@ export class LoginComponent {
           this.router.navigate(['/notes']);
         } else {
           this.isInvalidCredentials = true;
+          this.password = "";
         }
       },
       error: () => alert('Server error – check backend console.')
