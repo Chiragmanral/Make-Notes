@@ -38,11 +38,6 @@ It allows users to **sign up, log in, and create, view, edit, and delete notes**
 - **Authentication**: JWT + Refresh Tokens
 - **Deployment**: Vercel (Client) + Render (Server)
 
----
-
----
-
-## 🛠 Tech Stack
 <p align="center">
   <img src="https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white" />
   <img src="https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white" />
