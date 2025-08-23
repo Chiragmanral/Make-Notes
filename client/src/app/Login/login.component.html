@@ -18,7 +18,7 @@
             <input [(ngModel)]="password" type="password" placeholder="Password" name="password" required/>
             <button type="submit" class="form-button">Login</button>
             <div *ngIf="isInvalidCredentials" class="error">
-                Incorrect Credentials!!!
+                The e-mail address and/or password you specified are not correct.
             </div>
             <p>New user? <a (click)="goToSignup()">Signup</a></p>
         </form>
