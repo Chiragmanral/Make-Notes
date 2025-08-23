@@ -3,7 +3,7 @@
 A secure and minimal **Notes Application** built with the **MEAN Stack (MongoDB, Express, Angular, Node.js)**.  
 It allows users to **sign up, log in, and create, view, edit, and delete notes** — with JWT authentication and refresh token mechanism.  
 
-🚀 Deployed live: [Make Notes](https://make-notes-iota.vercel.app/)  
+🚀 Deployed live: [Make Notes](https://make-notes-chirag-singh-manrals-projects.vercel.app)  
 🔗 Backend API: [Render Server](https://make-notes-qyc8.onrender.com)
 
 ---
