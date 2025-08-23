@@ -1,0 +1,228 @@
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { AuthService } from '../../auth.service';
+
+@Component({
+  selector: 'app-home',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
+  templateUrl: './home.component.html',
+  styleUrl: './home.component.scss'
+})
+export class HomeComponent implements OnInit {
+  generateNotes: boolean = true;
+  viewNotes: boolean = false;
+  noteLink: string = "";
+  enteredText: string = "";
+  enteredPassword: string = "";
+  enteredDuration: string = "once";
+  noteLinkCredential: string = "";
+  passwordCredential: string = "";
+  noteText: string = "";
+  noteMsg: string = "";
+  userNotes: any[] = [];
+  viewModalOpen: boolean = false;
+  deleteModalOpen: boolean = false;
+  updateModalOpen: boolean = false;
+  selectedNoteText: string = '';
+  selectedNotePasswordStatus: string = "";
+  updatedNoteText: string = "";
+  noteToUpdate: string = "";
+  noteToDelete: any = null;
+
+  ngOnInit() {
+    this.fetchUserNotes();
+  }
+
+  constructor(private http: HttpClient, private router: Router, private auth: AuthService) { }
+
+  getGenerateNotes() {
+    this.generateNotes = true;
+    this.viewNotes = false;
+  }
+
+  getViewNotes() {
+    this.generateNotes = false;
+    this.viewNotes = true;
+  }
+
+  createNote() {
+    if (!this.enteredText) return;
+
+    this.http.post<{ generatedLink: string }>("http://localhost:5000/notes/create", {
+      noteText: this.enteredText,
+      notePassword: this.enteredPassword,
+      noteDuration: this.enteredDuration
+    })
+      .subscribe({
+        next: ({ generatedLink }) => {
+          this.noteLink = generatedLink;
+          this.enteredText = "";
+          this.enteredPassword = "";
+          this.enteredDuration = "once";
+        },
+        error: (err: HttpErrorResponse) => {
+          if (err.status === 403) {
+            alert("Your token or session is expired!! Login again")
+          }
+          else {
+            alert('Server error – check backend console.')
+          }
+        }
+      });
+  }
+
+  getNote() {
+    if (!this.noteLinkCredential) return;
+
+    this.http.post<{ text: string, msg: string }>("http://localhost:5000/notes/get", {
+      noteLinkCredential: this.noteLinkCredential,
+      passwordCredential: this.passwordCredential
+    })
+      .subscribe({
+        next: ({ text, msg }) => {
+          this.noteText = text;
+          this.noteMsg = msg;
+          this.noteLinkCredential = "";
+          this.passwordCredential = "";
+        },
+        error: (err: HttpErrorResponse) => {
+          if (err.status === 403) {
+            alert("Your token or session is expired!! Login again")
+          }
+          else {
+            alert('Server error – check backend console.')
+          }
+        }
+      });
+  }
+
+  logout() {
+    this.auth.logout();
+  }
+
+  fetchUserNotes() {
+    const accessToken = localStorage.getItem('accessToken');
+    if (!accessToken) return;
+
+    this.http.get<{ notes: any[] }>(
+      "http://localhost:5000/notes/myNotes",
+    ).subscribe({
+      next: (res) => this.userNotes = res.notes,
+      error: () => console.error("failed to fetch user notes")
+    });
+  }
+
+  copyLink(noteUrl: string) {
+    navigator.clipboard.writeText(noteUrl).then(() => {
+      console.log("Your link is copied to the clipboard!!");
+    }).catch(() => {
+      alert("Failed to copy link");
+    });
+  }
+
+  viewNote(noteUrl: string) {
+    this.http.post<{ text?: string; isPassword?: string }>(
+      "http://localhost:5000/notes/view",
+      { noteUrl }
+    ).subscribe({
+      next: ({ text, isPassword }) => {
+        if (text && isPassword) {
+          this.selectedNoteText = text;
+          this.selectedNotePasswordStatus = isPassword;
+          this.viewModalOpen = true;
+        }
+      },
+      error: (err: HttpErrorResponse) => {
+        if (err.status === 403) {
+          alert("Your token or session is expired!! Login again");
+        } else {
+          alert("Server error – check backend console.");
+        }
+      }
+    });
+  }
+
+  updateNote(noteUrl : string) {
+    this.noteToUpdate = noteUrl;
+
+    this.http.post<{ text : string }>("http://localhost:5000/notes/view", { noteUrl })
+    .subscribe({
+      next : ({ text }) => {
+        this.updatedNoteText = text;
+        this.updateModalOpen = true;
+      },
+      error: (err: HttpErrorResponse) => {
+        if (err.status === 403) {
+          alert("Your token or session is expired!! Login again");
+        } else {
+          alert("Server error – check backend console.");
+        }
+      }
+    })
+  }
+
+  confirmUpdate() {
+  if (this.noteToUpdate && this.updatedNoteText.trim()) {
+    this.http.post<{ success : boolean }>("http://localhost:5000/notes/update", { noteUrl : this.noteToUpdate, updatedNoteText : this.updatedNoteText })
+    .subscribe({
+      next : ({ success }) => {
+        if(success) {
+          console.log("Your note is successfully updated!!");
+          this.fetchUserNotes();
+          this.closeModal();
+        }
+        else {
+          alert("Server error : Your note is not updated!!");
+        }
+      },
+      error : (err) => {
+         console.error("Update failed:", err)
+      }
+    })
+    console.log('Updating:', this.noteToUpdate, 'with text:', this.updatedNoteText);
+  }
+  this.closeModal();
+}
+
+
+
+  deleteNote(noteUrl: string) {
+    this.noteToDelete = noteUrl;
+    this.deleteModalOpen = true;
+  }
+
+  confirmDelete() {
+    if (this.noteToDelete) {
+      this.http.post<{ deleted: boolean }>(
+        "http://localhost:5000/notes/delete",
+        { noteUrl: this.noteToDelete } // FIX: Send directly
+      ).subscribe({
+        next: (res) => {
+          if (res.deleted) {
+            console.log("Deleted the note successfully!!");
+            this.fetchUserNotes(); // Refresh notes list
+          } else {
+            console.log("Note is not deleted, there is some issue in deleting the note");
+          }
+        },
+        error: () => {
+          console.log("Server error - check backend console");
+        }
+      });
+    }
+    this.closeModal();
+  }
+
+  closeModal() {
+    this.viewModalOpen = false;
+    this.deleteModalOpen = false;
+    this.updateModalOpen = false;
+    this.selectedNoteText = '';
+    this.noteToDelete = null;
+    this.updatedNoteText = "";
+  }
+}

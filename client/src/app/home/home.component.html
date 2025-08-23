@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <title>Make Notes</title>
+</head>
+
+<body>
+  <header>
+    <nav class="notes-choice">
+      <button type="button" class="choice" (click)="getGenerateNotes()"><i class="fas fa-plus"></i> Generate
+        Notes</button>
+      <button type="button" class="choice" (click)="getViewNotes()"><i class="fas fa-eye"></i> View Notes</button>
+      <button type="button" class="choice logout" (click)="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </nav>
+  </header>
+
+  <!-- View Note Modal -->
+  <div class="modal-backdrop" *ngIf="viewModalOpen" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <h3><i class="fas fa-sticky-note"></i> Note Content</h3>
+      <p>{{ selectedNoteText }}</p>
+      <p>{{ selectedNotePasswordStatus }}</p>
+      <button class="modal-btn" (click)="closeModal()"><i class="fas fa-times"></i> Close</button>
+    </div>
+  </div>
+
+  <!-- Update Note Modal -->
+  <div class="modal-backdrop" *ngIf="updateModalOpen" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <h3>Update Note</h3>
+      <textarea [(ngModel)]="updatedNoteText" rows="5" class="modal-textarea"></textarea>
+      <div class="modal-actions">
+        <button class="modal-btn" (click)="confirmUpdate()">Save</button>
+        <button class="modal-btn" (click)="closeModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal-backdrop" *ngIf="deleteModalOpen" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <h3><i class="fas fa-exclamation-triangle"></i> Delete this note?</h3>
+      <p>This action cannot be undone.</p>
+      <div class="modal-actions">
+        <button class="modal-btn danger" (click)="confirmDelete()"><i class="fas fa-trash"></i> Delete</button>
+        <button class="modal-btn" (click)="closeModal()"><i class="fas fa-times"></i> Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="generateNotes" class="form">
+    <form (ngSubmit)="createNote()">
+      <label for="input-text">Text* : </label>
+      <input [(ngModel)]="enteredText" name="input-text" type="text" placeholder="Enter some text here" required />
+      <br /><br />
+      <label for="password">Password : </label>
+      <input name="password" type="password" [(ngModel)]="enteredPassword" />
+      <!-- <p class="password-msg">Give password to make your note password protected else leave it to make it a public note.</p> -->
+      <br /><br />
+
+      <div class="button-select-flex">
+        <button type="submit" class="form-button"><i class="fas fa-link"></i> Generate Link</button>
+
+        <select name="validationDuration" id="validationDuration" [(ngModel)]="enteredDuration">
+          <option value="once">Once</option>
+          <option value="1hr">1 hr</option>
+          <option value="8hr">8 hr</option>
+          <option value="1day">1 day</option>
+          <option value="1week">1 week</option>
+          <option value="always">Always</option>
+        </select>
+      </div>
+
+      <div *ngIf="noteLink">
+        <h4>Note Link: <a>{{ noteLink }}</a></h4>
+        <button type="button" class="form-button" (click)="copyLink(noteLink)"><i class="fas fa-copy"></i> Copy
+          link</button>
+      </div>
+
+    </form>
+
+    <div *ngIf="userNotes.length > 0">
+      <h3>Your Notes : </h3>
+      <ul>
+        <li *ngFor="let note of userNotes" class="note-card">
+          🔗 <a>{{ note.noteUrl }}</a>
+          <div class="note-actions">
+            <!-- Copy Button -->
+            <button type="button" class="form-button mynotes" (click)="copyLink(note.noteUrl)"><i
+                class="fas fa-copy"></i> Copy</button>
+            <!-- View Button -->
+            <button class="btn btn-view" (click)="viewNote(note.noteUrl)">
+              <i class="fas fa-eye"></i> View
+            </button>
+            <!-- Update Button -->
+            <button class="btn btn-update" (click)="updateNote(note.noteUrl)">
+              <i class="fas fa-edit"></i> Update
+            </button>
+            <!-- Delete Button -->
+            <button class="btn btn-delete" (click)="deleteNote(note.noteUrl)">
+              <i class="fas fa-trash"></i> Delete
+            </button>
+          </div>
+          <span *ngIf="note.noteViewOnce"> - View Once</span>
+          <span *ngIf="note.noteViewAlways"> - Always Visible</span>
+          <span *ngIf="note.noteValidationTime"> - Expires at: {{ note.noteValidationTime | date }}</span>
+        </li>
+      </ul>
+    </div>
+
+  </div>
+  <div *ngIf="viewNotes" class="form">
+    <form>
+      <label for="link">Link* : </label>
+      <input [(ngModel)]="noteLinkCredential" name="link" type="text" placeholder="Enter your link here" required />
+      <br /><br />
+      <label for="password">Password : </label>
+      <input name="password" type="password" [(ngModel)]="passwordCredential" />
+      <!-- <p class="password-msg">Enter password if the note is password protected, for public notes leave it.</p> -->
+      <br /><br />
+      <button type="submit" class="form-button" (click)="getNote()"><i class="fas fa-paper-plane"></i> Submit</button>
+
+      <div *ngIf="noteText">
+        <h4>Your note is :- {{ noteText }}</h4>
+      </div>
+
+      <!-- <div *ngIf="noteMsg">
+          <h4>Error :- {{ noteMsg }}</h4>
+        </div> -->
+      <div *ngIf="noteMsg && !noteText" class="error">
+        <h4>{{ noteMsg }}</h4>
+      </div>
+    </form>
+  </div>
+</body>
+
+</html>
