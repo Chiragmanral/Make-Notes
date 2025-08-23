@@ -50,8 +50,6 @@ It allows users to **sign up, log in, and create, view, edit, and delete notes**
 
 ---
 
----
-
 ## Contributing
 
 Any kind of contributions are welcome.
