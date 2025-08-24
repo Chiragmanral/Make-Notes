@@ -29,7 +29,7 @@ exports.createNote = async (req, res) => {
     if (body.noteDuration === "1day") payload.noteValidationTime = Date.now() + 24 * 60 * 60 * 1000;
 
     await Note.create(payload);
-    res.json({ generatedLink: url });
+    return res.json({ generatedLink: url });
 };
 
 // Get a note
@@ -56,7 +56,7 @@ exports.getNote = async (req, res) => {
         return res.json({ msg: "Note expired" });
     }
 
-    res.json({ text: decryptedText });
+    return res.json({ text: decryptedText });
 };
 
 // View Note
@@ -72,14 +72,14 @@ exports.viewMyNote = async (req, res) => {
 
         const decryptedText = decrypt(note.noteText);
 
-        res.json({
+        return res.json({
             text: decryptedText,
             isPassword: note.notePassword ? "Password protected" : "No password"
         });
     }
     catch (err) {
         console.error("Error viewing note:", err);
-        res.status(500).json({ msg: "Internal server error" });
+        return res.status(500).json({ msg: "Internal server error" });
     }
 };
 
@@ -92,19 +92,19 @@ exports.updateNote = async (req, res) => {
         { noteText: encryptedText }
     );
     if (note) return res.json({ success: true });
-    res.json({ success: false });
+    return res.json({ success: false });
 };
 
 // Delete note
 exports.deleteNote = async (req, res) => {
     const { noteUrl } = req.body;
     const deleted = await Note.deleteOne({ noteUrl, createdBy: req.user.id });
-    res.json({ deleted: deleted.deletedCount === 1 });
+    return res.json({ deleted: deleted.deletedCount === 1 });
 };
 
 // My Notes
 exports.myNotes = async (req, res) => {
     const userNotes = await Note.find({ createdBy: req.user.id });
-    res.json({ notes: userNotes });
+    return res.json({ notes: userNotes });
 };
 

@@ -34,9 +34,9 @@ exports.signup = async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
         await User.create({ email, password: hashedPassword });
-        res.json({ success: true });
+        return res.json({ success: true });
     } catch (err) {
-        res.status(500).json({ success: false, msg: "Server error" });
+        return res.status(500).json({ success: false, msg: "Server error" });
     }
 };
 
@@ -55,9 +55,9 @@ exports.login = async (req, res) => {
         user.refreshToken = refreshToken;
         await user.save();
 
-        res.json({ success: true, accessToken, refreshToken });
+        return res.json({ success: true, accessToken, refreshToken });
     } catch (err) {
-        res.status(500).json({ success: false });
+        return res.status(500).json({ success: false });
     }
 };
 
@@ -70,9 +70,9 @@ exports.logout = async (req, res) => {
             user.refreshToken = null;
             await user.save();
         }
-        res.json({ msg: "Logged out" });
+        return res.json({ msg: "Logged out" });
     } catch {
-        res.status(400).json({ msg: "Logout failed" });
+        return res.status(400).json({ msg: "Logout failed" });
     }
 };
 
@@ -85,8 +85,8 @@ exports.refreshAccessToken = async (req, res) => {
             return res.status(403).json({ msg: "Invalid refresh token" });
         }
         const newAccessToken = generateAccessToken({ id: user._id });
-        res.json({ accessToken: newAccessToken });
+        return res.json({ accessToken: newAccessToken });
     } catch {
-        res.status(400).json({ msg: "Invalid refresh token" });
+        return res.status(400).json({ msg: "Invalid refresh token" });
     }
 };
