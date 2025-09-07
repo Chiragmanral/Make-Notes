@@ -39,7 +39,7 @@ exports.getNote = async (req, res) => {
     if (!note) return res.json({ msg: "Note expired or not found" });
 
     if (note.notePassword && !(await bcrypt.compare(passwordCredential, note.notePassword))) {
-        return res.json({ msg: "Wrong password" });
+        return res.json({ msg: "Wrong link or password" });
     }
 
     const decryptedText = decrypt(note.noteText);

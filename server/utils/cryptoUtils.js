@@ -35,4 +35,9 @@ function decrypt(hash) {
     return decrypted;
 }
 
-module.exports = { encrypt, decrypt }; 
+// hash the email with deterministic(no-salt) hashing algorithm - sha256
+function hashEmail(email) {
+  return crypto.createHash("sha256").update(email.toLowerCase()).digest("hex");
+}
+
+module.exports = { encrypt, decrypt, hashEmail }; 

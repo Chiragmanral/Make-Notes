@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const { hashEmail } = require("../utils/cryptoUtils");
 
 function generateAccessToken(payload) {
     return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
@@ -27,38 +28,46 @@ exports.isTokensValid = async (req, res) => {
 }
 
 exports.signup = async (req, res) => {
-    const { email, password } = req.body;
-    try {
-        const existingUser = await User.findOne({ email });
-        if (existingUser) return res.status(400).json({ success: false, msg: "Email already registered" });
-
-        const hashedPassword = await bcrypt.hash(password, 10);
-        await User.create({ email, password: hashedPassword });
-        return res.json({ success: true });
-    } catch (err) {
-        return res.status(500).json({ success: false, msg: "Server error" });
+  const { email, password } = req.body;
+  try {
+    const hashedEmail = hashEmail(email);
+    const existingUser = await User.findOne({ email: hashedEmail });
+    if (existingUser) {
+      return res.status(400).json({ success: false, msg: "Email already registered" });
     }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await User.create({
+      email: hashedEmail,
+      password: hashedPassword
+    })
+    return res.json({ success: true });
+  }
+  catch (err) {
+    return res.status(500).json({ success: false, msg: "Server error" });
+  }
 };
 
 exports.login = async (req, res) => {
-    const { email, password } = req.body;
-    try {
-        const user = await User.findOne({ email });
-        if (!user || !(await bcrypt.compare(password, user.password))) {
-            return res.json({ success: false });
-        }
-
-        const payload = { id: user._id };
-        const accessToken = generateAccessToken(payload);
-        const refreshToken = generateRefreshToken(payload);
-
-        user.refreshToken = refreshToken;
-        await user.save();
-
-        return res.json({ success: true, accessToken, refreshToken });
-    } catch (err) {
-        return res.status(500).json({ success: false });
+  const { email, password } = req.body;
+  try {
+    const hashedEmail = hashEmail(email);
+    const user = await User.findOne({ email: hashedEmail });
+    if (!user || (await bcrypt.compare(password, user.password) === false)) {
+      return res.json({ success: false });
     }
+    const payload = { id: user._id };
+    const accessToken = generateAccessToken(payload);
+    const refreshToken = generateRefreshToken(payload);
+
+    const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
+    user.refreshToken = hashedRefreshToken;
+    await user.save(); // save method is only used for the object user present in the User database.
+
+    return res.json({ success: true, accessToken, refreshToken });
+  }
+  catch (err) {
+    return res.status(500).json({ success: false });
+  }
 };
 
 exports.logout = async (req, res) => {
@@ -77,16 +86,24 @@ exports.logout = async (req, res) => {
 };
 
 exports.refreshAccessToken = async (req, res) => {
-    const { refreshToken } = req.body;
-    try {
-        const decodedUser = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
-        const user = await User.findById(decodedUser.id);
-        if (!user || user.refreshToken !== refreshToken) {
-            return res.status(403).json({ msg: "Invalid refresh token" });
-        }
-        const newAccessToken = generateAccessToken({ id: user._id });
-        return res.json({ accessToken: newAccessToken });
-    } catch {
-        return res.status(400).json({ msg: "Invalid refresh token" });
+  const { refreshToken } = req.body;
+  try {
+    const decodedUser = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+    const user = await User.findById(decodedUser.id);
+
+    if (!user) {
+      return res.status(403).json({ msg: "User not found" });
     }
+
+    // 🔒 Compare hashed token with bcrypt
+    const isMatch = await bcrypt.compare(refreshToken, user.refreshToken);
+    if (!isMatch) {
+      return res.status(403).json({ msg: "Invalid refresh token" });
+    }
+
+    const newAccessToken = generateAccessToken({ id: user._id });
+    return res.json({ accessToken: newAccessToken });
+  } catch {
+    return res.status(400).json({ msg: "Invalid refresh token" });
+  }
 };
