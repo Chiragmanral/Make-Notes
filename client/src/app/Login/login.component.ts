@@ -16,11 +16,16 @@ export class LoginComponent {
   email = '';
   password = '';
   isInvalidCredentials: boolean = false;
+  isEmptyCredentials : boolean = false;
 
   constructor(private http: HttpClient, private router: Router, private auth: AuthService) { }
 
   login() {
-    if (!this.email || !this.password) return;
+    if(!this.email || !this.password) {
+      this.isEmptyCredentials = true;
+      this.isInvalidCredentials = false;
+      return;
+    }
     this.http.post<{
       success: boolean, accessToken?: string, refreshToken?: string
     }>('https://make-notes-qyc8.onrender.com/auth/login', {
@@ -33,6 +38,7 @@ export class LoginComponent {
           this.router.navigate(['/notes']);
         } else {
           this.isInvalidCredentials = true;
+          this.isEmptyCredentials = false;
           this.email = "";
           this.password = "";
         }

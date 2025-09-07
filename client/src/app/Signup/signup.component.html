@@ -21,6 +21,10 @@
       <input type="password" id="password" name="password" placeholder="Enter your password" [(ngModel)]="password"
         required />
 
+      <p *ngIf="isInvalidCredentials" class="error"> Please enter both email and password!!</p>
+      <p *ngIf="isInvalidEmail" class="error"> Enter a valid email address!!</p>
+      <p *ngIf="isInvalidPassword" class="error"> Password must be minimun of 8 characters with atleast one letter and one number!!</p>
+
       <div *ngIf="isSignupSuccessful" class="success">
         SignUp Successful
       </div>

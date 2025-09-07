@@ -15,12 +15,40 @@ export class SignupComponent {
   email: string = '';
   password: string = '';
   isSignupSuccessful: boolean = false;
+  emailRegex = /^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/;
+  strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+  isInvalidCredentials : boolean = false; 
+  isInvalidEmail : boolean = false;
+  isInvalidPassword : boolean = false;
 
   constructor(private http: HttpClient, private router: Router) { }
 
   signup() {
-    if (!this.email || !this.password) return;
-    this.http.post<{ success: boolean }>('https://make-notes-qyc8.onrender.com/auth/signup', {
+    if(!this.email || !this.password ) {
+      this.isInvalidCredentials = true;
+      this.isInvalidEmail = false;
+      this.isInvalidPassword = false;
+      return;
+    }
+
+    else if(!this.emailRegex.test(this.email)) {
+      this.isInvalidEmail = true;
+      this.isInvalidCredentials = false;
+      this.isInvalidPassword = false;
+      this.password = "";
+      return;
+    }
+
+    else if(!this.strongPasswordRegex.test(this.password)) {
+      this.isInvalidPassword = true;
+      this.isInvalidEmail = false;
+      this.isInvalidCredentials = false;
+      this.password = "";
+      return;
+    }
+
+    else {
+      this.http.post<{ success: boolean }>('https://make-notes-qyc8.onrender.com/auth/signup', {
       email: this.email,
       password: this.password
     }).subscribe({
@@ -34,6 +62,7 @@ export class SignupComponent {
       },
       error: () => alert('Server error – check backend console.')
     });
+    }
   }
 
   login() {
