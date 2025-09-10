@@ -4,28 +4,26 @@ const User = require("../models/User");
 const { hashEmail } = require("../utils/cryptoUtils");
 
 function generateAccessToken(payload) {
-    return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
+    return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "10s" });
 }
 function generateRefreshToken(payload) {
-    return jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
+    return jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "10m" });
 }
 
 exports.isTokensValid = async (req, res) => {
-    const { accessToken, refreshToken } = req.body;
-
+    const { refreshToken } = req.body;
     try {
-        const decodedUserByAccessToken = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
         const decodedUserByRefreshToken = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
 
-        if (decodedUserByAccessToken && decodedUserByRefreshToken) {
-            return res.json({ validTokens: true });
+        if ( decodedUserByRefreshToken) {
+            return res.status(200).json({ validTokens: true });
         }
-        return res.json({ validTokens: false });
+        return res.status(400).json({ validTokens: false });
     }
     catch (err) {
-        return res.json({ validTokens: false });
+        return res.status(400).json({ validTokens: false });
     }
-}
+};
 
 exports.signup = async (req, res) => {
   const { email, password } = req.body;
@@ -40,7 +38,7 @@ exports.signup = async (req, res) => {
       email: hashedEmail,
       password: hashedPassword
     })
-    return res.json({ success: true });
+    return res.status(201).json({ success: true });
   }
   catch (err) {
     return res.status(500).json({ success: false, msg: "Server error" });
@@ -53,7 +51,7 @@ exports.login = async (req, res) => {
     const hashedEmail = hashEmail(email);
     const user = await User.findOne({ email: hashedEmail });
     if (!user || (await bcrypt.compare(password, user.password) === false)) {
-      return res.json({ success: false });
+      return res.status(400).json({ success: false, msg : "Invalid credentials" });
     }
     const payload = { id: user._id };
     const accessToken = generateAccessToken(payload);
@@ -63,15 +61,20 @@ exports.login = async (req, res) => {
     user.refreshToken = hashedRefreshToken;
     await user.save(); // save method is only used for the object user present in the User database.
 
-    return res.json({ success: true, accessToken, refreshToken });
+    return res.status(200).json({ success: true, accessToken, refreshToken });
   }
   catch (err) {
-    return res.status(500).json({ success: false });
+    return res.status(500).json({ success: false , msg : "Server error"});
   }
 };
 
 exports.logout = async (req, res) => {
     const { refreshToken } = req.body;
+
+    if (!refreshToken) {
+      return res.status(403).json({ msg: "No refresh token provided" });
+    }
+
     try {
         const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
         const user = await User.findById(decoded.id);
@@ -79,31 +82,37 @@ exports.logout = async (req, res) => {
             user.refreshToken = null;
             await user.save();
         }
-        return res.json({ msg: "Logged out" });
+        return res.status(200).json({ msg: "Logged out" });
     } catch {
-        return res.status(400).json({ msg: "Logout failed" });
+        console.log("Logout failed");
+        return res.status(401).json({ msg: "Logout failed" });
     }
 };
 
 exports.refreshAccessToken = async (req, res) => {
   const { refreshToken } = req.body;
+
+  if(!refreshToken) {
+    return res.status(403).json({ msg : "Refresh token not found"}); //No refresh token
+  }
+  
   try {
     const decodedUser = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
     const user = await User.findById(decodedUser.id);
 
     if (!user) {
-      return res.status(403).json({ msg: "User not found" });
+      return res.status(404).json({ msg: "User not found" }); 
     }
 
-    // 🔒 Compare hashed token with bcrypt
+    // Compare hashed token with bcrypt
     const isMatch = await bcrypt.compare(refreshToken, user.refreshToken);
     if (!isMatch) {
-      return res.status(403).json({ msg: "Invalid refresh token" });
+      return res.status(401).json({ msg: "Invalid refresh token not the valid user" }); // Refresh token is invalid
     }
 
     const newAccessToken = generateAccessToken({ id: user._id });
-    return res.json({ accessToken: newAccessToken });
+    return res.status(201).json({ accessToken: newAccessToken });
   } catch {
-    return res.status(400).json({ msg: "Invalid refresh token" });
+    return res.status(401).json({ msg: "Invalid refresh token not produced by the server" }); // Refresh token is invalid
   }
 };
