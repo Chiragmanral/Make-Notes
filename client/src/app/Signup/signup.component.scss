@@ -60,10 +60,19 @@ select {
     background: #1565c0;
 }
 
+
 a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     color: #1e88e5;
     text-decoration: underline;
     word-break: break-all;
+    font-size: 15px;
+
+    &:hover {
+        text-decoration: none;
+    }
 }
 
 .success {
@@ -73,8 +82,12 @@ a {
 }
 
 .error {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     color: red;
-    font-weight: lighter;
-    margin-top: 0;
     padding-top: 0;
+    margin: 5px;
+    margin-top: 0;
+    margin-bottom: 1rem;
 }

@@ -53,16 +53,19 @@
     </div>
   </div>
 
+  <!-- Generate Note -->
   <div *ngIf="generateNotes" class="form">
     <form (ngSubmit)="createNote()">
-      <label for="input-text">Text* : </label>
+      <label for="input-text">Text*</label>
       <input [(ngModel)]="enteredText" name="input-text" type="text" placeholder="Enter some text here" required />
       <br /><br />
-      <label for="password">Password : </label>
+      <label for="password">Password<small>(min. 8 characters)</small></label>
       <input name="password" type="password" [(ngModel)]="enteredPassword" />
-      <!-- <p class="password-msg">Give password to make your note password protected else leave it to make it a public note.</p> -->
-      <br /><br />
-
+      <small class="error">*Enter password to make note private.</small>
+      <br />
+      <small *ngIf="!isNoteText" class="error">*Please enter the note text.</small>
+      <small *ngIf="!isStrongPassword" class="error">*Password must be minimun of 8 characters with atleast one uppercase letter,one lowercase letter,one special character and one number!!</small>
+      <br>
       <div class="button-select-flex">
         <button type="submit" class="form-button"><i class="fas fa-link"></i> Generate Link</button>
 
@@ -78,8 +81,7 @@
 
       <div *ngIf="noteLink">
         <h4>Note Link: <a>{{ noteLink }}</a></h4>
-        <button type="button" class="form-button" (click)="copyLink(noteLink)"><i class="fas fa-copy"></i> Copy
-          link</button>
+        <button type="button" class="form-button" (click)="copyLink(noteLink)"><i class="fas fa-copy"></i> {{ copiedStates[noteLink] || "Copy" }}</button>
       </div>
 
     </form>
@@ -92,7 +94,7 @@
           <div class="note-actions">
             <!-- Copy Button -->
             <button type="button" class="form-button mynotes" (click)="copyLink(note.noteUrl)"><i
-                class="fas fa-copy"></i> Copy</button>
+                class="fas fa-copy"></i> {{ copiedStates[note.noteUrl] || "Copy" }}</button>
             <!-- View Button -->
             <button class="btn btn-view" (click)="viewNote(note.noteUrl)">
               <i class="fas fa-eye"></i> View
@@ -112,26 +114,25 @@
         </li>
       </ul>
     </div>
-
   </div>
+
+  <!-- View Notes -->
   <div *ngIf="viewNotes" class="form">
     <form>
-      <label for="link">Link* : </label>
+      <label for="link">Link*</label>
       <input [(ngModel)]="noteLinkCredential" name="link" type="text" placeholder="Enter your link here" required />
       <br /><br />
-      <label for="password">Password : </label>
+      <label for="password">Password<small>(min. 8 characters)</small></label>
       <input name="password" type="password" [(ngModel)]="passwordCredential" />
-      <!-- <p class="password-msg">Enter password if the note is password protected, for public notes leave it.</p> -->
-      <br /><br />
+      <small class="error">*Enter password to view private notes.</small>
+      <br />
+      <small *ngIf="!isNoteUrl" class="error">*Enter a valid note link.</small>
+      <br>
       <button type="submit" class="form-button" (click)="getNote()"><i class="fas fa-paper-plane"></i> Submit</button>
 
       <div *ngIf="noteText">
         <h4>Your note is :- {{ noteText }}</h4>
       </div>
-
-      <!-- <div *ngIf="noteMsg">
-          <h4>Error :- {{ noteMsg }}</h4>
-        </div> -->
       <div *ngIf="noteMsg && !noteText" class="error">
         <h4>{{ noteMsg }}</h4>
       </div>

@@ -14,12 +14,13 @@ import { FormsModule } from '@angular/forms';
 export class SignupComponent {
   email: string = '';
   password: string = '';
-  isSignupSuccessful: boolean = false;
   emailRegex = /^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/;
   strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
   isInvalidCredentials : boolean = false; 
   isInvalidEmail : boolean = false;
   isInvalidPassword : boolean = false;
+  isEmailRegistered : boolean = false;
+  isSubmitting : boolean = false;
 
   constructor(private http: HttpClient, private router: Router) { }
 
@@ -28,6 +29,7 @@ export class SignupComponent {
       this.isInvalidCredentials = true;
       this.isInvalidEmail = false;
       this.isInvalidPassword = false;
+      this.isEmailRegistered = false;
       return;
     }
 
@@ -35,6 +37,7 @@ export class SignupComponent {
       this.isInvalidEmail = true;
       this.isInvalidCredentials = false;
       this.isInvalidPassword = false;
+      this.isEmailRegistered = false;
       this.password = "";
       return;
     }
@@ -43,25 +46,35 @@ export class SignupComponent {
       this.isInvalidPassword = true;
       this.isInvalidEmail = false;
       this.isInvalidCredentials = false;
+      this.isEmailRegistered = false;
       this.password = "";
       return;
     }
 
     else {
-      this.http.post<{ success: boolean }>('https://make-notes-qyc8.onrender.com/auth/signup', {
+      this.isSubmitting = true;
+      this.http.post<{ success: boolean, msg ?: string }>('https://make-notes-qyc8.onrender.com/auth/signup', {
       email: this.email,
       password: this.password
     }).subscribe({
       next: (res) => {
+        this.isSubmitting = false;
         if (res.success) {
-          alert("Signup successfull!!");
+          console.log("Signup successfull!!");
           this.router.navigate(['/login']);
-        } else {
-          alert('Signup failed!');
         }
       },
-      error: () => alert('Server error – check backend console.')
-    });
+      error: (err) => {
+        this.isSubmitting = false;
+        if (err.status === 400 && err.error.msg) {
+        this.isEmailRegistered = true;
+        this.isInvalidCredentials = false;
+        this.isInvalidEmail = false;
+        this.isInvalidPassword = false;
+        } else {
+          alert("Server error – please try again later.");
+        }
+      }});
     }
   }
 

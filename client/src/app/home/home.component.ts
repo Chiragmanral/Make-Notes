@@ -32,6 +32,14 @@ export class HomeComponent implements OnInit {
   updatedNoteText: string = "";
   noteToUpdate: string = "";
   noteToDelete: any = null;
+  isNoteText : boolean = true;
+  isStrongPassword : boolean = true;
+  isNoteUrl : boolean = true;
+  strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+  // temp : string = "Copy";
+  // Instead of single string
+  copiedStates: { [noteUrl: string]: string } = {};
+
 
   ngOnInit() {
     this.fetchUserNotes();
@@ -50,7 +58,21 @@ export class HomeComponent implements OnInit {
   }
 
   createNote() {
-    if (!this.enteredText) return;
+    if (!this.enteredText) {
+      this.isNoteText = false;
+      this.isStrongPassword = true;
+      this.enteredPassword = "";
+      return;
+    }
+
+    else if(this.enteredPassword) {
+      if(!this.strongPasswordRegex.test(this.enteredPassword)) {
+        this.isStrongPassword = false;
+        this.isNoteText = true;
+        this.enteredPassword = "";
+        return;
+      }
+    }
 
     this.http.post<{ generatedLink: string }>("https://make-notes-qyc8.onrender.com/notes/create", {
       noteText: this.enteredText,
@@ -62,10 +84,11 @@ export class HomeComponent implements OnInit {
           this.noteLink = generatedLink;
           this.enteredText = "";
           this.enteredPassword = "";
+          this.isStrongPassword = true;
           this.enteredDuration = "once";
         },
         error: (err: HttpErrorResponse) => {
-          if (err.status === 403) {
+          if (err.status === 401) {
             alert("Your token or session is expired!! Login again")
           }
           else {
@@ -76,7 +99,10 @@ export class HomeComponent implements OnInit {
   }
 
   getNote() {
-    if (!this.noteLinkCredential) return;
+    if (!this.noteLinkCredential)  {
+      this.isNoteUrl = false;
+      return;
+    }
 
     this.http.post<{ text: string, msg: string }>("https://make-notes-qyc8.onrender.com/notes/get", {
       noteLinkCredential: this.noteLinkCredential,
@@ -86,11 +112,12 @@ export class HomeComponent implements OnInit {
         next: ({ text, msg }) => {
           this.noteText = text;
           this.noteMsg = msg;
+          this.isNoteUrl = true;
           this.noteLinkCredential = "";
           this.passwordCredential = "";
         },
         error: (err: HttpErrorResponse) => {
-          if (err.status === 403) {
+          if (err.status === 401) {
             alert("Your token or session is expired!! Login again")
           }
           else {
@@ -112,13 +139,26 @@ export class HomeComponent implements OnInit {
       "https://make-notes-qyc8.onrender.com/notes/myNotes",
     ).subscribe({
       next: (res) => this.userNotes = res.notes,
-      error: () => console.error("failed to fetch user notes")
+      error: (err: HttpErrorResponse) => {
+        if (err.status === 401) {
+            alert("Your token or session is expired!! Login again")
+          }
+          else {
+            alert('Server error – check backend console.')
+          }
+      }
     });
   }
 
   copyLink(noteUrl: string) {
     navigator.clipboard.writeText(noteUrl).then(() => {
       console.log("Your link is copied to the clipboard!!");
+      this.copiedStates[noteUrl] = "Copied";   //  mark this button as Copied
+
+      // Reset it back to "Copy" after 2 sec
+      setTimeout(() => {
+        this.copiedStates[noteUrl] = "Copy";
+      }, 2000);
     }).catch(() => {
       alert("Failed to copy link");
     });
@@ -137,7 +177,7 @@ export class HomeComponent implements OnInit {
         }
       },
       error: (err: HttpErrorResponse) => {
-        if (err.status === 403) {
+        if (err.status === 401) {
           alert("Your token or session is expired!! Login again");
         } else {
           alert("Server error – check backend console.");
@@ -156,7 +196,7 @@ export class HomeComponent implements OnInit {
         this.updateModalOpen = true;
       },
       error: (err: HttpErrorResponse) => {
-        if (err.status === 403) {
+        if (err.status === 401) {
           alert("Your token or session is expired!! Login again");
         } else {
           alert("Server error – check backend console.");
@@ -165,7 +205,7 @@ export class HomeComponent implements OnInit {
     })
   }
 
-  confirmUpdate() {
+  confirmUpdate() { 
   if (this.noteToUpdate && this.updatedNoteText.trim()) {
     this.http.post<{ success : boolean }>("https://make-notes-qyc8.onrender.com/notes/update", { noteUrl : this.noteToUpdate, updatedNoteText : this.updatedNoteText })
     .subscribe({
@@ -176,19 +216,21 @@ export class HomeComponent implements OnInit {
           this.closeModal();
         }
         else {
-          alert("Server error : Your note is not updated!!");
+          alert("Update failed");
         }
       },
-      error : (err) => {
-         console.error("Update failed:", err)
+      error : (err : HttpErrorResponse) => {
+         if (err.status === 401) {
+          alert("Your token or session is expired!! Login again");
+        } else {
+          alert("Server error – check backend console.");
+        }
       }
     })
     console.log('Updating:', this.noteToUpdate, 'with text:', this.updatedNoteText);
   }
   this.closeModal();
-}
-
-
+  }
 
   deleteNote(noteUrl: string) {
     this.noteToDelete = noteUrl;
@@ -209,8 +251,12 @@ export class HomeComponent implements OnInit {
             console.log("Note is not deleted, there is some issue in deleting the note");
           }
         },
-        error: () => {
-          console.log("Server error - check backend console");
+        error: (err : HttpErrorResponse) => {
+          if (err.status === 401) {
+            alert("Your token or session is expired!! Login again");
+          } else {
+            alert("Server error – check backend console.");
+          }
         }
       });
     }

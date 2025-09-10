@@ -17,22 +17,25 @@ export class LoginComponent {
   password = '';
   isInvalidCredentials: boolean = false;
   isEmptyCredentials : boolean = false;
+  isSubmitting : boolean = false;
 
   constructor(private http: HttpClient, private router: Router, private auth: AuthService) { }
 
   login() {
+    this.isSubmitting = true;
     if(!this.email || !this.password) {
       this.isEmptyCredentials = true;
       this.isInvalidCredentials = false;
       return;
     }
     this.http.post<{
-      success: boolean, accessToken?: string, refreshToken?: string
+      success: boolean, accessToken?: string, refreshToken?: string, msg ?: string
     }>('https://make-notes-qyc8.onrender.com/auth/login', {
       email: this.email,
       password: this.password
     }).subscribe({
       next: (res) => {
+        this.isSubmitting = false;
         if (res.success && res.accessToken && res.refreshToken) {
           this.auth.saveTokens(res.accessToken, res.refreshToken);
           this.router.navigate(['/notes']);
@@ -43,7 +46,15 @@ export class LoginComponent {
           this.password = "";
         }
       },
-      error: () => alert('Server error – check backend console.')
+      error: (err) => {
+        this.isSubmitting = false;
+        if (err.status === 400 && err.error.msg) {
+          this.isInvalidCredentials = true;
+          this.isEmptyCredentials = false;
+        } else {
+          alert("Server error – please try again later.");
+        }
+      }
     });
   }
 

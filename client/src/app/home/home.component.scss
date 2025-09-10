@@ -2,7 +2,7 @@
 $primary: #1e88e5;
 $primary-dark: #1565c0;
 $primary-darker: #0d47a1;
-$accent: #4cafef;
+$accent: #30a2ed;
 $danger: #f44336;
 $danger-dark: #d7382d;
 $light-bg: #f7f9fc;
@@ -151,7 +151,7 @@ select {
     background-color: $accent;
 
     &:hover {
-        background-color: darken($accent, 10%);
+        background-color: #1471af;
     }
 }
 
@@ -200,8 +200,9 @@ ul {
 
 .error {
     color: $danger;
-    font-weight: 600;
-    margin-top: 1rem;
+    // font-weight: lighter;
+    margin-top: 0;
+    padding-top: 0;
 }
 
 a {
