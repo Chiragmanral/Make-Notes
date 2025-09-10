@@ -57,8 +57,7 @@ exports.login = async (req, res) => {
     const accessToken = generateAccessToken(payload);
     const refreshToken = generateRefreshToken(payload);
 
-    const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
-    user.refreshToken = hashedRefreshToken;
+    user.refreshToken = refreshToken;
     await user.save(); // save method is only used for the object user present in the User database.
 
     return res.status(200).json({ success: true, accessToken, refreshToken });
@@ -72,20 +71,28 @@ exports.logout = async (req, res) => {
     const { refreshToken } = req.body;
 
     if (!refreshToken) {
-      return res.status(403).json({ msg: "No refresh token provided" });
+      return res.status(403).json({ msg: "No refresh token provided" }); // Refresh token is not provided by the frontend
     }
 
     try {
         const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
         const user = await User.findById(decoded.id);
-        if (user) {
-            user.refreshToken = null;
-            await user.save();
+
+        if (!user) {
+          return res.status(404).json({ msg: "User not found" }); 
         }
-        return res.status(200).json({ msg: "Logged out" });
+
+        const isMatch = (refreshToken === user.refreshToken);
+        if (!isMatch) {
+          return res.status(401).json({ msg: "Invalid refresh token not the valid user" }); // Refresh token is invalid
+        }
+
+        user.refreshToken = null;
+        await user.save();
+        return res.status(200).json({ msg: "Logged out successfully" });
     } catch {
         console.log("Logout failed");
-        return res.status(401).json({ msg: "Logout failed" });
+        return res.status(401).json({ msg: "Logout failed bcz invalid refresh token either tampered or expired!!" }); // Invalid refresh token either tampered or expired!!
     }
 };
 
@@ -93,7 +100,7 @@ exports.refreshAccessToken = async (req, res) => {
   const { refreshToken } = req.body;
 
   if(!refreshToken) {
-    return res.status(403).json({ msg : "Refresh token not found"}); //No refresh token
+    return res.status(403).json({ msg : "Refresh token not found"}); //No refresh token is come from the frontend 
   }
   
   try {
@@ -105,7 +112,7 @@ exports.refreshAccessToken = async (req, res) => {
     }
 
     // Compare hashed token with bcrypt
-    const isMatch = await bcrypt.compare(refreshToken, user.refreshToken);
+    const isMatch = (refreshToken === user.refreshToken);
     if (!isMatch) {
       return res.status(401).json({ msg: "Invalid refresh token not the valid user" }); // Refresh token is invalid
     }
@@ -113,6 +120,6 @@ exports.refreshAccessToken = async (req, res) => {
     const newAccessToken = generateAccessToken({ id: user._id });
     return res.status(201).json({ accessToken: newAccessToken });
   } catch {
-    return res.status(401).json({ msg: "Invalid refresh token not produced by the server" }); // Refresh token is invalid
+    return res.status(401).json({ msg: "Invalid refresh token either tampered or expired!!" }); // Refresh token is invalid
   }
 };
