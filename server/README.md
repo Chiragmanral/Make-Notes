@@ -59,7 +59,7 @@ nodemon server.js (Use nodemon for hot reload)
 
 ## API Endpoints
 
-- api -> https://make-notes-qyc8.onrender.com
+- API -> https://make-notes-qyc8.onrender.com
 
 🔑 Auth
 
