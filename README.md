@@ -3,7 +3,7 @@
 A secure and minimal **Notes Application** built with the **MEAN Stack (MongoDB, Express, Angular, Node.js)**.  
 It allows users to **sign up, log in, and create, view, edit, and delete notes** — with JWT authentication and refresh token mechanism.  
 
-🚀 Deployed live: [Make Notes](https://make-notes-git-main-chirag-singh-manrals-projects.vercel.app)  
+🚀 Deployed live: [Make Notes](https://make-notes-iota.vercel.app/login)  
 🔗 Backend API: [Render Server](https://make-notes-qyc8.onrender.com)
 
 ---
@@ -14,6 +14,15 @@ It allows users to **sign up, log in, and create, view, edit, and delete notes**
 - 💾 **Secure Token Management** (Access & Refresh Tokens)
 - 🎨 **Modern Angular UI** with responsive design
 - ☁️ **Full Deployment**: Frontend on Vercel, Backend on Render
+
+---
+
+## 🔐 Session Limitation
+**⚠️ Important: This application supports only one active device/session per user at a time.**
+
+- When you log in on a **new device (or browser tab), the old session’s refresh token becomes invalid.**
+
+- This ensures **higher security**, but it also means **you will be logged out automatically from your previous device when logging in somewhere else.**
 
 ---
 
