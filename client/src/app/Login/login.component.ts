@@ -22,7 +22,6 @@ export class LoginComponent {
   constructor(private http: HttpClient, private router: Router, private auth: AuthService) { }
 
   login() {
-    this.isSubmitting = true;
     if(!this.email || !this.password) {
       this.isEmptyCredentials = true;
       this.isInvalidCredentials = false;
@@ -35,7 +34,6 @@ export class LoginComponent {
       password: this.password
     }).subscribe({
       next: (res) => {
-        this.isSubmitting = false;
         if (res.success && res.accessToken && res.refreshToken) {
           this.auth.saveTokens(res.accessToken, res.refreshToken);
           this.router.navigate(['/notes']);
@@ -47,7 +45,6 @@ export class LoginComponent {
         }
       },
       error: (err) => {
-        this.isSubmitting = false;
         if (err.status === 400 && err.error.msg) {
           this.isInvalidCredentials = true;
           this.isEmptyCredentials = false;

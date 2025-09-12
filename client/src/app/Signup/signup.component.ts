@@ -20,7 +20,6 @@ export class SignupComponent {
   isInvalidEmail : boolean = false;
   isInvalidPassword : boolean = false;
   isEmailRegistered : boolean = false;
-  isSubmitting : boolean = false;
 
   constructor(private http: HttpClient, private router: Router) { }
 
@@ -52,20 +51,17 @@ export class SignupComponent {
     }
 
     else {
-      this.isSubmitting = true;
       this.http.post<{ success: boolean, msg ?: string }>('https://make-notes-qyc8.onrender.com/auth/signup', {
       email: this.email,
       password: this.password
     }).subscribe({
       next: (res) => {
-        this.isSubmitting = false;
         if (res.success) {
           console.log("Signup successfull!!");
           this.router.navigate(['/login']);
         }
       },
       error: (err) => {
-        this.isSubmitting = false;
         if (err.status === 400 && err.error.msg) {
         this.isEmailRegistered = true;
         this.isInvalidCredentials = false;
