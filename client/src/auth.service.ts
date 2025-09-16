@@ -5,7 +5,7 @@ import { catchError, map, Observable, of, tap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private API_URL = 'https://make-notes-qyc8.onrender.com';
+  private API_URL = 'https://api.chirags.tech';
 
   constructor(private http: HttpClient, private router: Router) { }
 

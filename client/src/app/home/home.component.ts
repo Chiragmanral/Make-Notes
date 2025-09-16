@@ -74,7 +74,7 @@ export class HomeComponent implements OnInit {
       }
     }
 
-    this.http.post<{ generatedLink: string }>("https://make-notes-qyc8.onrender.com/notes/create", {
+    this.http.post<{ generatedLink: string }>("https://api.chirags.tech/notes/create", {
       noteText: this.enteredText,
       notePassword: this.enteredPassword,
       noteDuration: this.enteredDuration
@@ -104,7 +104,7 @@ export class HomeComponent implements OnInit {
       return;
     }
 
-    this.http.post<{ text: string, msg: string }>("https://make-notes-qyc8.onrender.com/notes/get", {
+    this.http.post<{ text: string, msg: string }>("https://api.chirags.tech/notes/get", {
       noteLinkCredential: this.noteLinkCredential,
       passwordCredential: this.passwordCredential
     })
@@ -136,7 +136,7 @@ export class HomeComponent implements OnInit {
     if (!accessToken) return;
 
     this.http.get<{ notes: any[] }>(
-      "https://make-notes-qyc8.onrender.com/notes/myNotes",
+      "https://api.chirags.tech/notes/myNotes",
     ).subscribe({
       next: (res) => this.userNotes = res.notes,
       error: (err: HttpErrorResponse) => {
@@ -166,7 +166,7 @@ export class HomeComponent implements OnInit {
 
   viewNote(noteUrl: string) {
     this.http.post<{ text?: string; isPassword?: string }>(
-      "https://make-notes-qyc8.onrender.com/notes/view",
+      "https://api.chirags.tech/notes/view",
       { noteUrl }
     ).subscribe({
       next: ({ text, isPassword }) => {
@@ -189,7 +189,7 @@ export class HomeComponent implements OnInit {
   updateNote(noteUrl : string) {
     this.noteToUpdate = noteUrl;
 
-    this.http.post<{ text : string }>("https://make-notes-qyc8.onrender.com/notes/view", { noteUrl })
+    this.http.post<{ text : string }>("https://api.chirags.tech/notes/view", { noteUrl })
     .subscribe({
       next : ({ text }) => {
         this.updatedNoteText = text;
@@ -207,7 +207,7 @@ export class HomeComponent implements OnInit {
 
   confirmUpdate() { 
   if (this.noteToUpdate && this.updatedNoteText.trim()) {
-    this.http.post<{ success : boolean }>("https://make-notes-qyc8.onrender.com/notes/update", { noteUrl : this.noteToUpdate, updatedNoteText : this.updatedNoteText })
+    this.http.post<{ success : boolean }>("https://api.chirags.tech/notes/update", { noteUrl : this.noteToUpdate, updatedNoteText : this.updatedNoteText })
     .subscribe({
       next : ({ success }) => {
         if(success) {
@@ -240,7 +240,7 @@ export class HomeComponent implements OnInit {
   confirmDelete() {
     if (this.noteToDelete) {
       this.http.post<{ deleted: boolean }>(
-        "https://make-notes-qyc8.onrender.com/notes/delete",
+        "https://api.chirags.tech/notes/delete",
         { noteUrl: this.noteToDelete } // FIX: Send directly
       ).subscribe({
         next: (res) => {

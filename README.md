@@ -3,8 +3,8 @@
 A secure and minimal **Notes Application** built with the **MEAN Stack (MongoDB, Express, Angular, Node.js)**.  
 It allows users to **sign up, log in, and create, view, edit, and delete notes** — with JWT authentication and refresh token mechanism.  
 
-🚀 Deployed live: [Make Notes](https://make-notes-iota.vercel.app/login)  
-🔗 Backend API: [Render Server](https://make-notes-qyc8.onrender.com)
+🚀 Deployed live: [Make Notes](https://www.chirags.tech/login)  
+🔗 Backend API: [Render Server](https://api.chirags.tech)
 
 ---
 
@@ -89,6 +89,6 @@ ng serve -o
 
 ---
 
-**Important Note** - Now your frontend will be running on **http://localhost:4200** in your browser, and your backend API will be running on **http://localhost:5000**, but your frontend will be hitting the live API by default. So, if you want to run this project fully on your local system then replace all the **live API link(https://make-notes-qyc8.onrender.com)** to **http://localhost:5000** in your frontend code, to run this project fully locally on your system.
+**Important Note** - Now your frontend will be running on **http://localhost:4200** in your browser, and your backend API will be running on **http://localhost:5000**, but your frontend will be hitting the live API by default. So, if you want to run this project fully on your local system then replace all the **live API link(https://api.chirags.tech)** to **http://localhost:5000** in your frontend code, to run this project fully locally on your system.
 
 **Bonus tip** :- You can use nodemon server.js instead of npm start(node server.js) to run your backend locally at the time of development.

@@ -29,7 +29,7 @@ export class LoginComponent {
     }
     this.http.post<{
       success: boolean, accessToken?: string, refreshToken?: string, msg ?: string
-    }>('https://make-notes-qyc8.onrender.com/auth/login', {
+    }>('https://api.chirags.tech/auth/login', {
       email: this.email,
       password: this.password
     }).subscribe({

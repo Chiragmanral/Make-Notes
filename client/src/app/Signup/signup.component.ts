@@ -51,7 +51,7 @@ export class SignupComponent {
     }
 
     else {
-      this.http.post<{ success: boolean, msg ?: string }>('https://make-notes-qyc8.onrender.com/auth/signup', {
+      this.http.post<{ success: boolean, msg ?: string }>('https://api.chirags.tech/auth/signup', {
       email: this.email,
       password: this.password
     }).subscribe({
