@@ -1,9 +1,9 @@
-# 📝 Make Notes
+# 📝 Safe Notes
 
 A secure and minimal **Notes Application** built with the **MEAN Stack (MongoDB, Express, Angular, Node.js)**.  
 It allows users to **sign up, log in, and create, view, edit, and delete notes** — with JWT authentication and refresh token mechanism.  
 
-🚀 Deployed live: [Make Notes](https://www.chirags.tech/login)  
+🚀 Deployed live: [Safe Notes](https://www.chirags.tech/login)  
 🔗 Backend API: [Render Server](https://api.chirags.tech)
 
 ---
@@ -72,8 +72,8 @@ Any kind of contributions are welcome.
 
 ```bash
 # Clone the repository
-git clone https://github.com/Chiragmanral/Make-Notes.git
-cd Make-Notes
+git clone https://github.com/Chiragmanral/SAFE-NOTES
+cd SAFE-NOTES
 
 # Setup Backend
 cd server

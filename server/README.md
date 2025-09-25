@@ -1,6 +1,6 @@
-# ⚙️ Make Notes (Backend)
+# ⚙️ Safe Notes (Backend)
 
-This is the **backend API** for the Make Notes app, built with **Node.js, Express, and MongoDB**.  
+This is the **backend API** for the Safe Notes app, built with **Node.js, Express, and MongoDB**.  
 It provides secure **JWT authentication**, manages **access & refresh tokens**, and handles **CRUD operations** for notes.
 
 ---
@@ -31,8 +31,8 @@ It provides secure **JWT authentication**, manages **access & refresh tokens**, 
 
    ```bash
    # Clone the repo
-   git clone https://github.com/Chiragmanral/Make-Notes.git
-   cd Make-Notes/server
+   git clone https://github.com/Chiragmanral/SAFE-NOTES
+   cd SAFE-NOTES/server
 
    # Install dependencies
    npm install

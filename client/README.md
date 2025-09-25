@@ -1,4 +1,4 @@
-# 📝 Make Notes (Frontend)
+# 📝 Safe Notes (Frontend)
 
 A modern **Note-Taking App** built with **Angular 19** as part of the full-stack MEAN application.  
 It allows users to **sign up, log in, create, edit, and securely store notes** with encryption.
