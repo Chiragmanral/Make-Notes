@@ -16,14 +16,14 @@ It provides secure **JWT authentication**, manages **access & refresh tokens**, 
 
 ## 📂 Project Structure
 
-1. config/ -> **Database & environment setup**
-2. controllers/ -> **Auth & notes logic**
-3. middleware/ -> **Auth verification (JWT)**
-4. models/ -> **MongoDB schemas**
-5. routes/ -> **API routes (auth & notes)**
-6. server.js -> **Entry point**
-7. package.json -> **Dependencies & scripts**
-8. README.md -> **Backend documentation**
+1. `config/` -> **Database & environment setup**
+2. `controllers/` -> **Auth & notes logic**
+3. `middleware/` -> **Auth verification (JWT)**
+4. `models/` -> **MongoDB schemas**
+5. `routes/` -> **API routes (auth & notes)**
+6. `server.js` -> **Entry point**
+7. `package.json` -> **Dependencies & scripts**
+8. `README.md` -> **Backend documentation**
 
 ---
 
@@ -38,20 +38,20 @@ It provides secure **JWT authentication**, manages **access & refresh tokens**, 
    npm install
 
    # Set up environment variables
-   Create a .env file in the server/ folder:
+   # Create a .env file in the server/ folder:
    
    PORT=5000
-MONGO_URL=your_mongodb_atlas_connection_string
-ACCESS_TOKEN_SECRET=your_secret_key
-REFRESH_TOKEN_SECRET=your_refresh_secret
-NOTE_SECRET_KEY=your_note_secret
+   MONGO_URL=your_mongodb_atlas_connection_string
+   ACCESS_TOKEN_SECRET=your_secret_key
+   REFRESH_TOKEN_SECRET=your_refresh_secret
+   NOTE_SECRET_KEY=your_note_secret
 
-# Start the server
-npm start
-or
-nodemon server.js (Use nodemon for hot reload)
+   # Start the server
+   npm start
+   or
+   nodemon server.js (Use nodemon for hot reload)
 
-# Now your backend runs on http://localhost:5000
+   # Now your backend runs on http://localhost:5000
 
 ```
 
@@ -59,24 +59,24 @@ nodemon server.js (Use nodemon for hot reload)
 
 ## API Endpoints
 
-- API -> https://api.chirags.tech
+- API -> `https://api.chirags.tech`
 
 🔑 Auth
 
-1. POST api/auth/signup → Register user
-2. POST api/auth/login → Login & get tokens
-3. POST api/auth/refreshAccessToken → Refresh access token
-4. POST api/auth/logout -> Logs out the user
-5. POST api/auth/isTokensValid -> Checks the validity of both access and refresh tokens.
+1. POST `API/auth/signup` → Register user
+2. POST `API/auth/login` → Login & get tokens
+3. POST `API/auth/refreshAccessToken` → Refresh access token
+4. POST `API/auth/logout` -> Logs out the user
+5. POST `API/auth/isTokensValid` -> Checks the validity of both access and refresh tokens.
 
 📝 Notes
 
-1. POST api/notes/create → Create note
-2. GET api/notes/myNotes → Get all notes
-3. POST api/notes/get → Get single note
-4. POST api/notes/update → Update note
-5. POST api/notes/delete → Delete note
-6. POST api/notes/view -> View any note without password only for author
+1. POST `API/notes/create` → Create note
+2. GET `API/notes/myNotes` → Get all notes
+3. POST `API/notes/get` → Get single note
+4. POST `API/notes/update` → Update note
+5. POST `API/notes/delete` → Delete note
+6. POST `API/notes/view` -> View any note without password only for author
 
 ---
 

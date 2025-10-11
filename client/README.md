@@ -16,11 +16,17 @@ It allows users to **sign up, log in, create, edit, and securely store notes** w
 
 ## 📂 Project Structure
 
-1.  src/ -> **Angular source code**
-2.  dist/ -> **Production build output**
-3.  angular.json -> **Angular project configuration**
-4.  package.json -> **Dependencies & scripts**
-5.  README.md -> **Project documentation**
+1.  `src/` -> **Angular source code**
+2.  `dist/` -> **Production build output**
+3.  `angular.json` -> **Angular project configuration**
+4.  `package.json` -> **Dependencies & scripts**
+5.  `README.md` -> **Project documentation**
+
+---
+
+## 🌍 Live Deployment
+Frontend: [Safe Notes](https://www.chirags.tech/login)  
+Backend API: [Render Server](https://api.chirags.tech)
 
 ---
 
